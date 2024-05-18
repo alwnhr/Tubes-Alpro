@@ -31,7 +31,37 @@ type statusAcara struct {
 	totalEvents int
 }
 
+var status statusAcara
+var currentUser *users
+
 // ini isinya subprogram belum diisi tapi
+
+// Menu signing up
+func userSigning(fullName, username, password, email, phone string) bool {
+	if status.totalUsers >= NMAX {
+		fmt.Println("User limit reached")
+		return false
+	}
+	// Check jika username sudah ada
+	for i := 0; i < status.totalUsers; i++ {
+		if status.usersList[i].username == username {
+			fmt.Println("Username sudah digunakan!")
+			return false
+		}
+	}
+
+}
+
+// Menu login
+func userLogin(username, password string) bool {
+	for i := 0; i < status.totalUsers; i++ {
+		if status.usersList[i].username == username && status.usersList[i].password == password {
+			currentUser = &status.usersList[i]
+			return true
+		}
+	}
+	return false
+}
 
 func main() {
 	ClearScreen()
