@@ -4,8 +4,6 @@ import "fmt"
 
 const NMAX int = 100
 
-tes
-
 type users struct {
 	fullName string
 	username string
