@@ -49,6 +49,15 @@ func userSigning(fullName, username, password, email, phone string) bool {
 			return false
 		}
 	}
+	status.usersList[status.totalUsers] = users{
+		fullName: fullName,
+		username: username,
+		password: password,
+		email:    email,
+		phone:    phone,
+	}
+	status.totalUsers++
+	return true
 
 }
 
