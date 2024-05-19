@@ -176,3 +176,49 @@ func userLogin(username, password string) bool {
 		return false
 	}
 }
+
+// Menu dashboard
+func userDashboard() {
+	clearScreen()
+	fmt.Println("-------------------------")
+	fmt.Println("        Dashboard        ")
+	fmt.Println("-------------------------")
+	fmt.Printf("Selamat datang, %s!\n", status.currentUser.fullName)
+	var tgl, bln, thn int
+	fmt.Println("Masukkan tanggal untuk melihat acara:")
+	fmt.Scan(&tgl, &bln, &thn)
+	today := date{tgl: tgl, bln: bln, thn: thn}
+	fmt.Println("Daftar acara yang sedang berlangsung:")
+	displayEvents("current")
+	fmt.Println("Daftar acara yang akan datang:")
+	displayEvents("upcoming")
+}
+
+func displayEvents(today date, eventType string) {
+	for i := 0; i < status.totalEvents; i++ {
+		event := status.eventslist[i]
+
+		switch eventType {
+		case "current":
+			if event.tanggal == today {
+				printEvent(event)
+			}
+		case "upcoming":
+			if (event.tanggal.thn > today.thn) || (event.tanggal.thn == today.thn && event.tanggal.bln == today.bln && event.tanggal.tgl > today.tgl) {
+				printEvent(event)
+			}
+		}
+	}
+}
+
+func printEvent(event events) {
+	fmt.Printf("- %s (%s)\n", event.namaEvent, formatDate(event.tanggal))
+	fmt.Printf("	Deskripsi: %s\n", event.deskripsi)
+	fmt.Printf("	Tanggal: %s\n", formatDate(event.tanggal))
+	fmt.Printf("	Pembuat Acara: %s\n", event.pembuatAcara)
+	fmt.Println("-------------------------")
+}
+
+func formatDate(d date) string {
+	return fmt.Printf("%02d-%02d-%04d", d.tgl, d.bln, d.thn)
+}
