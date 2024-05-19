@@ -30,7 +30,7 @@ type statusAcara struct {
 	eventslist  [100]events
 	totalUsers  int
 	totalEvents int
-	currentUser *users // untuk merujuk ke user yang saat ini sedang aktif tanpa perlu akses ulang func users tiap saat
+	currentUser *users
 }
 
 var menu int
