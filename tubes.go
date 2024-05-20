@@ -5,6 +5,7 @@ import "fmt"
 const NMAX int = 100
 
 type users struct {
+	userId   int
 	fullName string
 	username string
 	password string
@@ -19,27 +20,26 @@ type date struct {
 }
 
 type events struct {
+	eventId      int
 	namaEvent    string
 	deskripsi    string
 	tanggal      date
-	pembuatAcara string
-	peserta      [50]int
+	creatorId    int
+	peserta      [NMAX]int
 	pesertaCount int
 }
 
 type statusAcara struct {
-	usersList   [100]users
-	eventslist  [100]events
+	usersList   [NMAX]users
+	eventslist  [NMAX]events
 	totalUsers  int
 	totalEvents int
 	currentUser *users
 }
 
-var menu int
+var status statusAcara
 
 func main() {
-	var listUser listUser
-	var nUser int = 0
 	selamatDatang()
 	for {
 		menu_registrasi()
@@ -76,7 +76,7 @@ func clearScreen() {
 
 func menu_registrasi() {
 	clearScreen()
-	fmt.Println("-------------------------")
+	fmt.Println("=========================")
 	fmt.Println("     MENU REGISTRASI     ")
 	fmt.Println("-------------------------")
 	fmt.Println("1. Signing Up")
@@ -84,55 +84,56 @@ func menu_registrasi() {
 	fmt.Println("3. Exit")
 	fmt.Println("-------------------------")
 	fmt.Print("Menu yang dipilih (1/2/3): ")
+	fmt.Scan(m)
+	menuRegis(*m)
 }
 
-// var fullName, username, password, email, phone string
+var fullName, username, password, email, phone string
 
-// func menuRegis(m int, lu *listUser) {
-// 	switch m {
-// 	case 1:
-// 		userSigning(fullName, username, password, email, phone)
-// 	case 2:
-// 		userLogin(username, password)
-// 	case 3:
-// 		return
-// 	default:
-// 		fmt.Println("Pilihan tidak valid")
-// 	}
-// }
+func menuRegis(m int) {
+	switch m {
+	case 1:
+		userSigning(fullName, username, password, email, phone)
+	case 2:
+		userLogin(username, password)
+	case 3:
+		return
+	default:
+		fmt.Println("Pilihan tidak valid")
+	}
+}
 
-// var status statusAcara
-// var user users
-// var currentUser *users
+var status statusAcara
+var user users
+var currentUser *users
 
 // Menu signing up
-func userSigning(status *listUser, n *int) bool {
-	var fullName, username, password, email, phone string
-	// if status.totalUsers >= NMAX {
-	// 	fmt.Println("==================")
-	// 	fmt.Println("User limit reached")
-	// 	fmt.Println("==================")
-	// 	return false
-	// }
-	// clearScreen()
+func userSigning(fullName, username, password, email, phone string) bool {
+	if status.totalUsers >= NMAX {
+		fmt.Println("==================")
+		fmt.Println("User limit reached")
+		fmt.Println("==================")
+		return false
+	}
+	clearScreen()
 	for {
 		fmt.Println("-------------------------")
-		fmt.Println("        Signing Up       ")
+		fmt.Println("Username sudah digunakan.")
 		fmt.Println("-------------------------")
 		fmt.Print("Full Name: ")
-		fmt.Scan(&fullName)
+		fmt.Scan(&user.fullName)
 		fmt.Print("Username: ")
-		fmt.Scan(&username)
+		fmt.Scan(&user.username)
 		fmt.Print("Password: ")
-		fmt.Scan(&password)
+		fmt.Scan(&user.password)
 		fmt.Print("E-Mail: ")
-		fmt.Scan(&email)
+		fmt.Scan(&user.email)
 		fmt.Print("Phone Number: ")
-		fmt.Scan(&phone)
+		fmt.Scan(&user.phone)
 
 		// Check jika username sudah ada
-		for i := 0; i < *n; i++ {
-			if status[i].username == username {
+		for i := 0; i < status.totalUsers; i++ {
+			if status.usersList[i].username == username {
 				fmt.Println("=========================")
 				fmt.Println("Username sudah digunakan!")
 				fmt.Println("=========================")
@@ -141,13 +142,13 @@ func userSigning(status *listUser, n *int) bool {
 		}
 
 		// Berhasil menambahkan pengguna baru
-		status[*n].fullName = fullName
-		status[*n].username = username
-		status[*n].password = password
-		// status.usersList[status.totalUsers].email = email
-		// status.usersList[status.totalUsers].phone = phone
+		status.usersList[status.totalUsers].fullName = fullName
+		status.usersList[status.totalUsers].username = username
+		status.usersList[status.totalUsers].password = password
+		status.usersList[status.totalUsers].email = email
+		status.usersList[status.totalUsers].phone = phone
 
-		*n++
+		status.totalUsers++
 		fmt.Println("=================================================")
 		fmt.Println("User registered successfully!")
 		fmt.Println("=================================================")
@@ -156,37 +157,37 @@ func userSigning(status *listUser, n *int) bool {
 }
 
 // Menu login
-// func userLogin(username, password string) bool {
-// 	clearScreen()
-// 	for {
-// 		fmt.Println("-------------------------")
-// 		fmt.Println("          Login          ")
-// 		fmt.Println("-------------------------")
-// 		fmt.Print("Username: ")
-// 		fmt.Scan(&user.username)
-// 		fmt.Print("Password: ")
-// 		fmt.Scan(&user.password)
+func userLogin(username, password string) bool {
+	clearScreen()
+	for {
+		fmt.Println("-------------------------")
+		fmt.Println("          Login          ")
+		fmt.Println("-------------------------")
+		fmt.Print("Username: ")
+		fmt.Scan(&user.username)
+		fmt.Print("Password: ")
+		fmt.Scan(&user.password)
 
-// 		// Login berhasil
-// 		for i := 0; i < status.totalUsers; i++ {
-// 			if status.usersList[i].username == username && status.usersList[i].password == password {
-// 				status.currentUser = &status.usersList[i]
-// 				fmt.Println("============================")
-// 				fmt.Println("Login berhasil!")
-// 				fmt.Printf("Selamat datang, %s.\n", status.currentUser.username)
-// 				fmt.Println("============================")
-// 				return true
-// 			}
-// 		}
+		// Login berhasil
+		for i := 0; i < status.totalUsers; i++ {
+			if status.usersList[i].username == username && status.usersList[i].password == password {
+				status.currentUser = &status.usersList[i]
+				fmt.Println("============================")
+				fmt.Println("Login berhasil!")
+				fmt.Printf("Selamat datang, %s.\n", status.currentUser.username)
+				fmt.Println("============================")
+				return true
+			}
+		}
 
-// 		// Login gagal
-// 		fmt.Println("=============================")
-// 		fmt.Println("Login gagal!")
-// 		fmt.Println("Username atau password salah.")
-// 		fmt.Println("=============================")
-// 		return false
-// 	}
-// }
+		// Login gagal
+		fmt.Println("=============================")
+		fmt.Println("Login gagal!")
+		fmt.Println("Username atau password salah.")
+		fmt.Println("=============================")
+		return false
+	}
+}
 
 // Menu dashboard
 // func userDashboard() {
