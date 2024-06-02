@@ -191,6 +191,7 @@ func dashboardMenu(user User) {
 		} else if pilih == 2 {
 			// Tambahkan fungsi peserta di sini
 		} else if pilih == 3 {
+			editProfile(&user)
 			// Tambahkan fungsi profil di sini
 		} else if pilih == 4 {
 			fmt.Println("Logging out...")
@@ -435,5 +436,62 @@ func sortEventsByDate(ascending bool) {
 	fmt.Println("\nAcara yang Diurutkan:")
 	for i := 0; i < eventCount; i++ {
 		fmt.Printf("Acara %d:\nNama Acara: %s\nDeskripsi: %s\nTanggal Acara: %s\n", i+1, events[i].Name, events[i].Description, events[i].Date)
+	}
+}
+
+func editProfile(user *User) {
+	fmt.Println("Profil Anda:")
+	fmt.Printf("1. Username: %s\n", user.Username)
+	fmt.Printf("2. Password: %s\n", user.Password)
+	fmt.Printf("3. Nama Lengkap: %s\n", user.FullName)
+	fmt.Printf("4. Email: %s\n", user.Email)
+	fmt.Printf("5. Nomor Telepon: %s\n", user.Phone)
+	fmt.Println("6. Kembali ke Dashboard")
+	fmt.Print("Jika ingin mengedit profil silahkan pilih (1/2/3/4/5), jika tidak pilih (6) untuk kembali ke dashboard: ")
+
+	var pilih int
+	fmt.Scan(&pilih)
+
+	if pilih == 1 {
+		fmt.Print("Masukkan username baru: ")
+		fmt.Scan(&user.Username)
+		fmt.Println("Username berhasil diubah!")
+	} else if pilih == 2 {
+		var newPassword string
+		fmt.Print("Masukkan password baru: ")
+		fmt.Scan(&newPassword)
+		user.Password = newPassword
+		fmt.Println("Password berhasil diubah!")
+	} else if pilih == 3 {
+		var newFullName string
+		fmt.Print("Masukkan nama lengkap baru: ")
+		fmt.Scan(&newFullName)
+		user.FullName = newFullName
+		fmt.Println("Nama lengkap berhasil diubah!")
+	} else if pilih == 4 {
+		var newEmail string
+		fmt.Print("Masukkan email baru: ")
+		fmt.Scan(&newEmail)
+		user.Email = newEmail
+		fmt.Println("Email berhasil diubah!")
+	} else if pilih == 5 {
+		var newPhone string
+		validPhone := false
+		for !validPhone {
+			fmt.Print("Masukkan nomor telepon baru: ")
+			fmt.Scan(&newPhone)
+			if isNumeric(newPhone) {
+				validPhone = true
+			} else {
+				fmt.Println("Nomor telepon tidak valid. Silakan masukkan nomor telepon valid yang hanya terdiri dari angka.")
+			}
+		}
+		user.Phone = newPhone
+		fmt.Println("Nomor telepon berhasil diubah!")
+	} else if pilih == 6 {
+		fmt.Println("Kembali ke dashboard...")
+		return
+	} else {
+		fmt.Println("Opsi tidak valid, harap coba lagi.")
 	}
 }
