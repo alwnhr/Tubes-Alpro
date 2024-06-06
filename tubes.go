@@ -1,10 +1,8 @@
 package main
 
-import "fmt"
-
-const maxUsers int = 100
-const maxEvents int = 1000
-const maxPeserta = 1000
+import (
+	"fmt"
+)
 
 type User struct {
 	Username string
@@ -20,20 +18,24 @@ type Event struct {
 	Date        string
 }
 
-type Peserta struct {
-	FullName  string
-	Email     string
-	Phone     string
-	EventName string
+type Participant struct {
+	Name       string
+	JoinDate   string
+	EventCount int
+	Events     []string
 }
+
+const maxUsers = 100
+const maxEvents = 1000
+const maxParticipants = 500
+
+var participants [maxParticipants]Participant
+var participantCount int
 
 var users [maxUsers]User
 var events [maxEvents]Event
 var userCount int
 var eventCount int
-
-var peserta [maxPeserta]Peserta
-var totalPeserta int
 
 var ongoingEvents [maxEvents]Event
 var ongoingEventCount int
@@ -77,13 +79,13 @@ func main() {
 
 	for {
 		fmt.Println("Selamat datang di aplikasi Manajemen Acara!")
-		fmt.Println("==================================================")
-		fmt.Println("                    MENU REGISTRASI               ")
-		fmt.Println("--------------------------------------------------")
+		fmt.Println("=========================")
+		fmt.Println("     MENU REGISTRASI     ")
+		fmt.Println("-------------------------")
 		fmt.Println("1. Signing Up")
 		fmt.Println("2. Login")
 		fmt.Println("3. Exit")
-		fmt.Println("--------------------------------------------------")
+		fmt.Println("-------------------------")
 		fmt.Print("Menu yang dipilih (1/2/3): ")
 
 		var pilih int
@@ -104,17 +106,17 @@ func main() {
 
 func register() {
 	if userCount >= maxUsers {
-		fmt.Println("--------------------------------------------------")
-		fmt.Println("               User limit reached!                ")
-		fmt.Println("--------------------------------------------------")
+		fmt.Println("==================")
+		fmt.Println("User limit reached")
+		fmt.Println("==================")
 		return
 	}
 
 	var username, password, fullName, email, phone string
 
-	fmt.Println("--------------------------------------------------")
-	fmt.Println("                      Register                    ")
-	fmt.Println("--------------------------------------------------")
+	fmt.Println("-------------------------")
+	fmt.Println("         Register        ")
+	fmt.Println("-------------------------")
 
 	fmt.Print("Username: ")
 	fmt.Scan(&username)
@@ -148,9 +150,9 @@ func register() {
 
 	users[userCount] = User{Username: username, Password: password, FullName: fullName, Email: email, Phone: phone}
 	userCount++
-	fmt.Println("--------------------------------------------------")
-	fmt.Println("         User registered successfully!            ")
-	fmt.Println("--------------------------------------------------")
+	fmt.Println("=================================================")
+	fmt.Println("					User registered successfully!						")
+	fmt.Println("=================================================")
 }
 
 func isNumeric(s string) bool {
@@ -164,9 +166,9 @@ func isNumeric(s string) bool {
 
 func login() {
 	var username, password string
-	fmt.Println("==================================================")
-	fmt.Println("                       Login                      ")
-	fmt.Println("==================================================")
+	fmt.Println("-------------------------")
+	fmt.Println("          Login          ")
+	fmt.Println("-------------------------")
 
 	fmt.Print("Username: ")
 	fmt.Scan(&username)
@@ -186,11 +188,7 @@ func login() {
 
 func dashboardMenu(user User) {
 	for {
-		fmt.Println("==================================================")
-		fmt.Println("                    DASHBOARD                     ")
-		fmt.Println("--------------------------------------------------")
 		fmt.Println("\nSelamat Datang,", user.FullName)
-		fmt.Println("--------------------------------------------------")
 		fmt.Println("Dashboard Menu:")
 		fmt.Println("Acara yang sedang berlangsung:")
 		showOngoingEvents()
@@ -202,7 +200,6 @@ func dashboardMenu(user User) {
 		fmt.Println("2. Peserta")
 		fmt.Println("3. Profil")
 		fmt.Println("4. Logout")
-		fmt.Println("--------------------------------------------------")
 		fmt.Print("Menu yang dipilih (1/2/3/4): ")
 
 		var pilih int
@@ -211,10 +208,10 @@ func dashboardMenu(user User) {
 		if pilih == 1 {
 			menuEvents(user)
 		} else if pilih == 2 {
-			menuPeserta()
+			menuParticipants(user)
 		} else if pilih == 3 {
 			editProfile(&user)
-			// Tambahkan fungsi profil di sini
+
 		} else if pilih == 4 {
 			fmt.Println("Logging out...")
 			return
@@ -248,16 +245,12 @@ func showUpcomingEvents() {
 
 func menuEvents(user User) {
 	for {
-		fmt.Println("==================================================")
-		fmt.Println("                   Pilih Menu!                    ")
-		fmt.Println("--------------------------------------------------")
 		fmt.Println("\nMenu Acara:")
 		fmt.Println("1. Buat Acara Baru")
 		fmt.Println("2. Edit Detail Acara")
 		fmt.Println("3. Cari Acara")
 		fmt.Println("4. Urutkan Acara")
 		fmt.Println("5. Kembali ke Dashboard")
-		fmt.Println("--------------------------------------------------")
 		fmt.Print("Menu yang dipilih (1/2/3/4/5): ")
 
 		var pilih int
@@ -282,9 +275,9 @@ func menuEvents(user User) {
 
 func createEvent(user User) {
 	if eventCount >= maxEvents {
-		fmt.Println("--------------------------------------------------")
-		fmt.Println("              Event limit reached!               ")
-		fmt.Println("--------------------------------------------------")
+		fmt.Println("===================")
+		fmt.Println("Event limit reached")
+		fmt.Println("===================")
 		return
 	}
 
@@ -312,9 +305,7 @@ func createEvent(user User) {
 	events[eventCount] = newEvent
 	eventCount++
 
-	fmt.Println("--------------------------------------------------")
-	fmt.Println("              Acara berhasil dibuat!              ")
-	fmt.Println("--------------------------------------------------")
+	fmt.Println("Acara berhasil dibuat!")
 }
 
 func editEvent(user User) {
@@ -345,241 +336,21 @@ func editEvent(user User) {
 
 	events[eventNum-1] = Event{Name: name, Description: description, Date: date}
 
-	// Update ongoing or upcoming events lists
-	if date == "2024-06-01" {
-		ongoingEvents[ongoingEventCount] = events[eventNum-1]
-		ongoingEventCount++
-		// Remove from upcomingEvents if present
-		for i := 0; i < upcomingEventCount; i++ {
-			if upcomingEvents[i].Name == name {
-				// Shift elements left to fill the gap
-				for j := i; j < upcomingEventCount-1; j++ {
-					upcomingEvents[j] = upcomingEvents[j+1]
-				}
-				upcomingEventCount--
-				i--
-			}
-		}
-	} else {
-		upcomingEvents[upcomingEventCount] = events[eventNum-1]
-		upcomingEventCount++
-		// Remove from ongoingEvents if present
-		for i := 0; i < ongoingEventCount; i++ {
-			if ongoingEvents[i].Name == name {
-				// Shift elements left to fill the gap
-				for j := i; j < ongoingEventCount-1; j++ {
-					ongoingEvents[j] = ongoingEvents[j+1]
-				}
-				ongoingEventCount--
-				i--
-			}
+	// Reset the ongoing and upcoming events
+	ongoingEventCount = 0
+	upcomingEventCount = 0
+
+	for i := 0; i < eventCount; i++ {
+		if events[i].Date == "2024-06-01" {
+			ongoingEvents[ongoingEventCount] = events[i]
+			ongoingEventCount++
+		} else {
+			upcomingEvents[upcomingEventCount] = events[i]
+			upcomingEventCount++
 		}
 	}
 
 	fmt.Println("Detail acara berhasil diperbarui!")
-}
-
-func menuPeserta() {
-	for {
-		fmt.Println("\nMenu Peserta:")
-		fmt.Println("1. Daftar Peserta")
-		fmt.Println("2. Tambah Peserta")
-		fmt.Println("3. Hapus Peserta")
-		fmt.Println("4. Cari Peserta")
-		fmt.Println("5. Kembali ke Dashboard")
-		fmt.Print("Menu yang dipilih (1/2/3/4/5): ")
-
-		var pilih int
-		fmt.Scan(&pilih)
-
-		if pilih == 1 {
-			lihatPeserta()
-		} else if pilih == 2 {
-			tambahPeserta()
-		} else if pilih == 3 {
-			hapusPeserta()
-		} else if pilih == 4 {
-			cariPeserta()
-		} else if pilih == 5 {
-			fmt.Println("Kembali ke dashboard...")
-			return
-		} else {
-			fmt.Println("Opsi tidak valid, harap coba lagi.")
-		}
-	}
-}
-
-func lihatPeserta() {
-	if totalPeserta == 0 {
-		fmt.Println("Tidak ada peserta yang terdaftar.")
-		return
-	}
-
-	fmt.Println("Daftar Peserta:")
-	for i := 0; i < totalPeserta; i++ {
-		fmt.Printf("%d. Nama: %s, Email: %s, Telepon: %s, Acara: %s\n", i+1, peserta[i].FullName, peserta[i].Email, peserta[i].Phone, peserta[i].EventName)
-	}
-}
-
-func tambahPeserta() {
-	if totalPeserta >= maxPeserta {
-		fmt.Println("Batas jumlah peserta telah tercapai.")
-		return
-	}
-
-	var fullName, email, phone, eventName string
-
-	fmt.Print("Nama lengkap: ")
-	fmt.Scan(&fullName)
-
-	fmt.Print("Email: ")
-	fmt.Scan(&email)
-
-	fmt.Print("Nomor telepon: ")
-	fmt.Scan(&phone)
-
-	fmt.Print("Nama acara: ")
-	fmt.Scan(&eventName)
-
-	peserta[totalPeserta] = Peserta{
-		FullName:  fullName,
-		Email:     email,
-		Phone:     phone,
-		EventName: eventName,
-	}
-	totalPeserta++
-
-	fmt.Println("Peserta berhasil ditambahkan.")
-}
-
-func hapusPeserta() {
-	if totalPeserta == 0 {
-		fmt.Println("Tidak ada peserta yang terdaftar.")
-		return
-	}
-
-	var pesertaName string
-	fmt.Print("Masukkan nama peserta yang ingin dihapus: ")
-	fmt.Scan(&pesertaName)
-
-	found := false
-	i := 0
-	for i < totalPeserta {
-		if peserta[i].FullName == pesertaName {
-			found = true
-			// Shift elements left to fill the gap
-			for j := i; j < totalPeserta-1; j++ {
-				peserta[j] = peserta[j+1]
-			}
-			peserta[totalPeserta-1] = Peserta{}
-			totalPeserta--
-		} else {
-			i++
-		}
-	}
-
-	if found {
-		fmt.Println("Peserta berhasil dihapus.")
-	} else {
-		fmt.Println("Nama peserta tidak ditemukan.")
-	}
-}
-
-func cariPeserta() {
-	fmt.Println("==================================================")
-	fmt.Println("                   Pilih Menu!                    ")
-	fmt.Println("--------------------------------------------------")
-	fmt.Println("Cari Peserta")
-	fmt.Println("1. Cari berdasarkan Nama")
-	fmt.Println("2. Cari berdasarkan Email")
-	fmt.Println("3. Kembali ke Menu Peserta")
-	fmt.Println("--------------------------------------------------")
-	fmt.Print("Pilih opsi (1/2/3): ")
-
-	var pilih int
-	fmt.Scan(&pilih)
-
-	if pilih == 1 {
-		var fullName string
-		fmt.Print("Masukkan nama lengkap peserta: ")
-		fmt.Scan(&fullName)
-		cariPesertaDariNama(fullName)
-	} else if pilih == 2 {
-		var email string
-		fmt.Print("Masukkan email peserta: ")
-		fmt.Scan(&email)
-		cariPesertaDariEmail(email)
-	} else if pilih == 3 {
-		fmt.Println("Kembali ke Menu Peserta...")
-	} else {
-		fmt.Println("Opsi tidak valid.")
-	}
-}
-
-func cariPesertaDariNama(name string) {
-	found := false
-	nameLower := toLower(name) // Konversi nama yang dicari ke huruf kecil
-
-	for i := 0; i < totalPeserta; i++ {
-		if contains(toLower(peserta[i].FullName), nameLower) {
-			fmt.Printf("Nama: %s, Email: %s, Telepon: %s, Acara: %s\n", peserta[i].FullName, peserta[i].Email, peserta[i].Phone, peserta[i].EventName)
-			found = true
-		}
-	}
-	if !found {
-		fmt.Println("Peserta tidak ditemukan.")
-	}
-}
-
-func cariPesertaDariEmail(email string) {
-	found := false
-	emailLower := toLower(email) // Konversi email yang dicari ke huruf kecil
-
-	for i := 0; i < totalPeserta; i++ {
-		if contains(toLower(peserta[i].Email), emailLower) {
-			fmt.Printf("Nama: %s, Email: %s, Telepon: %s, Acara: %s\n", peserta[i].FullName, peserta[i].Email, peserta[i].Phone, peserta[i].EventName)
-			found = true
-		}
-	}
-	if !found {
-		fmt.Println("Peserta tidak ditemukan.")
-	}
-}
-
-// Fungsi untuk mengubah string menjadi huruf kecil
-func toLower(s string) string {
-	result := []rune(s)
-	for i := 0; i < len(result); i++ {
-		if result[i] >= 'A' && result[i] <= 'Z' {
-			result[i] = result[i] + ('a' - 'A')
-		}
-	}
-	return string(result)
-}
-
-// Fungsi untuk memeriksa apakah string mengandung substring tertentu
-func contains(str, substr string) bool {
-	strLen := len(str)
-	substrLen := len(substr)
-
-	if substrLen == 0 {
-		return true
-	}
-
-	if substrLen > strLen {
-		return false
-	}
-
-	for i := 0; i <= strLen-substrLen; i++ {
-		match := true
-		for j := 0; j < substrLen && match; j++ {
-			match = str[i+j] == substr[j]
-		}
-		if match {
-			return true
-		}
-	}
-	return false
 }
 
 func searchEvent() {
@@ -635,13 +406,9 @@ func searchEventByDate(date string) {
 }
 
 func sortEvent() {
-	fmt.Println("==================================================")
-	fmt.Println("                   Pilih Menu!                    ")
-	fmt.Println("--------------------------------------------------")
 	fmt.Println("\nUrutkan Acara")
 	fmt.Println("1. Urutkan berdasarkan Tanggal (Ascending)")
 	fmt.Println("2. Urutkan berdasarkan Tanggal (Descending)")
-	fmt.Println("--------------------------------------------------")
 	fmt.Print("Opsi yang dipilih (1/2):")
 
 	var pilih int
@@ -675,16 +442,13 @@ func sortEventsByDate(ascending bool) {
 }
 
 func editProfile(user *User) {
-	fmt.Println("==================================================")
-	fmt.Println("                   Profil Anda                    ")
-	fmt.Println("--------------------------------------------------")
+	fmt.Println("Profil Anda:")
 	fmt.Printf("1. Username: %s\n", user.Username)
 	fmt.Printf("2. Password: %s\n", user.Password)
 	fmt.Printf("3. Nama Lengkap: %s\n", user.FullName)
 	fmt.Printf("4. Email: %s\n", user.Email)
 	fmt.Printf("5. Nomor Telepon: %s\n", user.Phone)
 	fmt.Println("6. Kembali ke Dashboard")
-	fmt.Println("--------------------------------------------------")
 	fmt.Print("Jika ingin mengedit profil silahkan pilih (1/2/3/4/5), jika tidak pilih (6) untuk kembali ke dashboard: ")
 
 	var pilih int
@@ -732,4 +496,264 @@ func editProfile(user *User) {
 	} else {
 		fmt.Println("Opsi tidak valid, harap coba lagi.")
 	}
+}
+
+func menuParticipants(user User) {
+	for {
+		fmt.Println("\nMenu Peserta:")
+		fmt.Println("1. Tambah Peserta")
+		fmt.Println("2. Hapus Peserta")
+		fmt.Println("3. Tampilkan Peserta")
+		fmt.Println("4. Cari Peserta")
+		fmt.Println("5. Urutkan Peserta")
+		fmt.Println("6. Kembali ke Dashboard")
+		fmt.Print("Menu yang dipilih (1/2/3/4/5/6): ")
+
+		var pilih int
+		fmt.Scan(&pilih)
+
+		if pilih == 1 {
+			addParticipant()
+		} else if pilih == 2 {
+			deleteParticipant()
+		} else if pilih == 3 {
+			showParticipants()
+		} else if pilih == 4 {
+			searchParticipant()
+		} else if pilih == 5 {
+			sortParticipants()
+		} else if pilih == 6 {
+			fmt.Println("Kembali ke dashboard...")
+			return
+		} else {
+			fmt.Println("Opsi tidak valid, harap coba lagi.")
+		}
+	}
+}
+
+func addParticipant() {
+	if participantCount >= maxParticipants {
+		fmt.Println("===================")
+		fmt.Println("Participant limit reached")
+		fmt.Println("===================")
+		return
+	}
+
+	var name, joinDate string
+	var eventNum int
+
+	fmt.Print("Masukkan nama peserta: ")
+	fmt.Scan(&name)
+
+	fmt.Print("Masukkan tanggal daftar (YYYY-MM-DD): ")
+	fmt.Scan(&joinDate)
+
+	fmt.Println("Pilih acara untuk ditambahkan pesertanya:")
+	showEvents() // Menampilkan daftar acara
+
+	fmt.Print("Masukkan nomor acara: ")
+	fmt.Scan(&eventNum)
+
+	if eventNum < 1 || eventNum > eventCount {
+		fmt.Println("Nomor acara tidak valid.")
+		return
+	}
+
+	eventIndex := eventNum - 1
+
+	participants[participantCount] = Participant{
+		Name:       name,
+		JoinDate:   joinDate,
+		EventCount: 1,                                 // Hanya menambahkan 1 acara pada saat ini
+		Events:     []string{events[eventIndex].Name}, // Menambahkan nama acara yang dipilih
+	}
+	participantCount++
+
+	fmt.Println("Peserta berhasil ditambahkan ke acara", events[eventIndex].Name)
+}
+
+func showEvents() {
+	fmt.Println("Daftar Acara:")
+	for i := 0; i < eventCount; i++ {
+		fmt.Printf("%d. %s - %s\n", i+1, events[i].Name, events[i].Date)
+	}
+}
+
+func deleteParticipant() {
+	fmt.Print("Masukkan nama peserta yang ingin dihapus: ")
+	var name string
+	fmt.Scan(&name)
+
+	for i := 0; i < participantCount; i++ {
+		if participants[i].Name == name {
+			participants[i] = participants[participantCount-1]
+			participantCount--
+			fmt.Println("Peserta berhasil dihapus!")
+			return
+		}
+	}
+	fmt.Println("Peserta tidak ditemukan.")
+}
+
+func showParticipants() {
+	if participantCount == 0 {
+		fmt.Println("Tidak ada peserta yang terdaftar.")
+		return
+	}
+
+	for i := 0; i < participantCount; i++ {
+		fmt.Printf("%d. Nama: %s, Tanggal Daftar: %s, Jumlah Acara: %d, Nama Acara: %v\n",
+			i+1, participants[i].Name, participants[i].JoinDate, participants[i].EventCount, participants[i].Events)
+	}
+}
+
+func searchParticipant() {
+	fmt.Println("\nCari peserta")
+	fmt.Println("1. Cari berdasarkan nama")
+	fmt.Println("2. Cari berdasarkan tanggal daftar")
+	fmt.Println("3. Cari berdasarkan jumlah acara")
+	fmt.Print("Opsi yang dipilih (1/2/3): ")
+
+	var choice int
+	fmt.Scan(&choice)
+
+	if choice == 1 {
+		var name string
+		fmt.Print("Masukkan nama peserta: ")
+		fmt.Scan(&name)
+		searchParticipantByName(name)
+	} else if choice == 2 {
+		var joinDate string
+		fmt.Print("Masukkan tanggal daftar (YYYY-MM-DD): ")
+		fmt.Scan(&joinDate)
+		searchParticipantByJoinDate(joinDate)
+	} else if choice == 3 {
+		var eventCount int
+		fmt.Print("Masukkan jumlah acara: ")
+		fmt.Scan(&eventCount)
+		searchParticipantByEventCount(eventCount)
+	} else {
+		fmt.Println("Opsi tidak valid, harap coba lagi.")
+	}
+}
+
+func searchParticipantByName(name string) {
+	fmt.Println("\nHasil Pencarian untuk Nama Peserta:", name)
+	found := false
+	for i := 0; i < participantCount; i++ {
+		if participants[i].Name == name {
+			fmt.Printf("Peserta %d:\nNama: %s\nTanggal Daftar: %s\nJumlah Acara: %d\nNama Acara: %v\n",
+				i+1, participants[i].Name, participants[i].JoinDate, participants[i].EventCount, participants[i].Events)
+			found = true
+		}
+	}
+	if !found {
+		fmt.Println("Tidak ditemukan peserta dengan nama yang diberikan.")
+	}
+}
+
+func searchParticipantByJoinDate(joinDate string) {
+	fmt.Println("\nHasil Pencarian untuk Tanggal Daftar:", joinDate)
+	found := false
+	for i := 0; i < participantCount; i++ {
+		if participants[i].JoinDate == joinDate {
+			fmt.Printf("Peserta %d:\nNama: %s\nTanggal Daftar: %s\nJumlah Acara: %d\nNama Acara: %v\n",
+				i+1, participants[i].Name, participants[i].JoinDate, participants[i].EventCount, participants[i].Events)
+			found = true
+		}
+	}
+	if !found {
+		fmt.Println("Tidak ada peserta yang ditemukan pada tanggal yang diberikan.")
+	}
+}
+
+func searchParticipantByEventCount(eventCount int) {
+	fmt.Println("\nHasil Pencarian untuk Jumlah Acara:", eventCount)
+	found := false
+	for i := 0; i < participantCount; i++ {
+		if participants[i].EventCount == eventCount {
+			fmt.Printf("Peserta %d:\nNama: %s\nTanggal Daftar: %s\nJumlah Acara: %d\nNama Acara: %v\n",
+				i+1, participants[i].Name, participants[i].JoinDate, participants[i].EventCount, participants[i].Events)
+			found = true
+		}
+	}
+	if !found {
+		fmt.Println("Tidak ditemukan peserta dengan jumlah acara yang diberikan.")
+	}
+}
+
+func sortParticipants() {
+	fmt.Println("\nUrutkan Peserta")
+	fmt.Println("1. Urutkan berdasarkan Tanggal Daftar (Ascending)")
+	fmt.Println("2. Urutkan berdasarkan Tanggal Daftar (Descending)")
+	fmt.Println("3. Urutkan berdasarkan Jumlah Acara (Ascending)")
+	fmt.Println("4. Urutkan berdasarkan Jumlah Acara (Descending)")
+	fmt.Print("Opsi yang dipilih (1/2/3/4): ")
+
+	var pilih int
+	fmt.Scan(&pilih)
+
+	if pilih == 1 {
+		sortParticipantsByJoinDateAsc()
+	} else if pilih == 2 {
+		sortParticipantsByJoinDateDesc()
+	} else if pilih == 3 {
+		sortParticipantsByEventCountAsc()
+	} else if pilih == 4 {
+		sortParticipantsByEventCountDesc()
+	} else {
+		fmt.Println("Opsi tidak valid, harap coba lagi.")
+	}
+}
+
+func sortParticipantsByJoinDateAsc() {
+	for i := 0; i < participantCount-1; i++ {
+		for j := i + 1; j < participantCount; j++ {
+			if participants[i].JoinDate > participants[j].JoinDate {
+				participants[i], participants[j] = participants[j], participants[i]
+			}
+		}
+	}
+
+	fmt.Println("\nPeserta yang Diurutkan berdasarkan Tanggal Daftar (Ascending):")
+	showParticipants()
+}
+
+func sortParticipantsByJoinDateDesc() {
+	for i := 0; i < participantCount-1; i++ {
+		for j := i + 1; j < participantCount; j++ {
+			if participants[i].JoinDate < participants[j].JoinDate {
+				participants[i], participants[j] = participants[j], participants[i]
+			}
+		}
+	}
+
+	fmt.Println("\nPeserta yang Diurutkan berdasarkan Tanggal Daftar (Descending):")
+	showParticipants()
+}
+
+func sortParticipantsByEventCountAsc() {
+	for i := 0; i < participantCount-1; i++ {
+		for j := i + 1; j < participantCount; j++ {
+			if participants[i].EventCount > participants[j].EventCount {
+				participants[i], participants[j] = participants[j], participants[i]
+			}
+		}
+	}
+
+	fmt.Println("\nPeserta yang Diurutkan berdasarkan Jumlah Acara (Ascending):")
+	showParticipants()
+}
+
+func sortParticipantsByEventCountDesc() {
+	for i := 0; i < participantCount-1; i++ {
+		for j := i + 1; j < participantCount; j++ {
+			if participants[i].EventCount < participants[j].EventCount {
+				participants[i], participants[j] = participants[j], participants[i]
+			}
+		}
+	}
+
+	fmt.Println("\nPeserta yang Diurutkan berdasarkan Jumlah Acara (Descending):")
+	showParticipants()
 }
