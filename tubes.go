@@ -46,6 +46,18 @@ func main() {
 	users[1] = User{Username: "gis", Password: "456", FullName: "Gisel", Email: "gisel@gmail.com", Phone: "987654321"}
 	userCount = 2
 
+	//Dummy data for participant
+	participants[0] = Participant{Name: "Syarif", JoinDate: "2024-06-01", EventCount: 2, Events: []string{"Seminar Teknologi", "Konferensi Kesehatan Global"}}
+	participants[1] = Participant{Name: "Ahmad", JoinDate: "2024-06-03", EventCount: 3, Events: []string{"Seminar Teknologi", "Pameran Seni Rupa", "Konferensi Kesehatan Global"}}
+	participants[2] = Participant{Name: "Budi", JoinDate: "2024-05-28", EventCount: 2, Events: []string{"Bazar Kreatif dan UMKM", "Konferensi Kesehatan Global"}}
+	participants[3] = Participant{Name: "Doni", JoinDate: "2024-05-30", EventCount: 1, Events: []string{"Pelatihan Keterampilan Digital"}}
+	participants[4] = Participant{Name: "Syarif", JoinDate: "2024-06-01", EventCount: 4, Events: []string{"Seminar Teknologi", "Pameran Seni Rupa", "Konferensi Kesehatan Global", "Pelatihan Keterampilan Digital"}}
+	participantCount = 5
+
+	for i := 0; i < len(dummyEvents); i++ {
+		events[eventCount] = dummyEvents[i]
+		if dummyEvents[i].Date == "2024-06-01" {
+
 	// Dummy data for events
 	dummyEvents := [5]Event{
 		{Name: "Seminar Teknologi", Description: "Diskusi tentang tren terbaru dan masa depan teknologi", Date: "2024-06-01"},
