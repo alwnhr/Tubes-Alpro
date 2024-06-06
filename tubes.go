@@ -69,13 +69,13 @@ func main() {
 
 	for {
 		fmt.Println("Selamat datang di aplikasi Manajemen Acara!")
-		fmt.Println("=========================")
-		fmt.Println("     MENU REGISTRASI     ")
-		fmt.Println("-------------------------")
+		fmt.Println("==================================================")
+		fmt.Println("                    MENU REGISTRASI               ")
+		fmt.Println("--------------------------------------------------")
 		fmt.Println("1. Signing Up")
 		fmt.Println("2. Login")
 		fmt.Println("3. Exit")
-		fmt.Println("-------------------------")
+		fmt.Println("--------------------------------------------------")
 		fmt.Print("Menu yang dipilih (1/2/3): ")
 
 		var pilih int
@@ -96,17 +96,17 @@ func main() {
 
 func register() {
 	if userCount >= maxUsers {
-		fmt.Println("==================")
-		fmt.Println("User limit reached")
-		fmt.Println("==================")
+		fmt.Println("--------------------------------------------------")
+		fmt.Println("               User limit reached!                ")
+		fmt.Println("--------------------------------------------------")
 		return
 	}
 
 	var username, password, fullName, email, phone string
 
-	fmt.Println("-------------------------")
-	fmt.Println("         Register        ")
-	fmt.Println("-------------------------")
+	fmt.Println("--------------------------------------------------")
+	fmt.Println("                      Register                    ")
+	fmt.Println("--------------------------------------------------")
 
 	fmt.Print("Username: ")
 	fmt.Scan(&username)
@@ -140,9 +140,9 @@ func register() {
 
 	users[userCount] = User{Username: username, Password: password, FullName: fullName, Email: email, Phone: phone}
 	userCount++
-	fmt.Println("=================================================")
-	fmt.Println("         User registered successfully!           ")
-	fmt.Println("=================================================")
+	fmt.Println("--------------------------------------------------")
+	fmt.Println("         User registered successfully!            ")
+	fmt.Println("--------------------------------------------------")
 }
 
 func isNumeric(s string) bool {
@@ -156,9 +156,9 @@ func isNumeric(s string) bool {
 
 func login() {
 	var username, password string
-	fmt.Println("-------------------------")
-	fmt.Println("          Login          ")
-	fmt.Println("-------------------------")
+	fmt.Println("==================================================")
+	fmt.Println("                       Login                      ")
+	fmt.Println("==================================================")
 
 	fmt.Print("Username: ")
 	fmt.Scan(&username)
@@ -178,7 +178,11 @@ func login() {
 
 func dashboardMenu(user User) {
 	for {
+		fmt.Println("==================================================")
+		fmt.Println("                    DASHBOARD                     ")
+		fmt.Println("--------------------------------------------------")
 		fmt.Println("\nSelamat Datang,", user.FullName)
+		fmt.Println("--------------------------------------------------")
 		fmt.Println("Dashboard Menu:")
 		fmt.Println("Acara yang sedang berlangsung:")
 		showOngoingEvents()
@@ -190,6 +194,7 @@ func dashboardMenu(user User) {
 		fmt.Println("2. Peserta")
 		fmt.Println("3. Profil")
 		fmt.Println("4. Logout")
+		fmt.Println("--------------------------------------------------")
 		fmt.Print("Menu yang dipilih (1/2/3/4): ")
 
 		var pilih int
@@ -235,12 +240,16 @@ func showUpcomingEvents() {
 
 func menuEvents(user User) {
 	for {
+		fmt.Println("==================================================")
+		fmt.Println("                   Pilih Menu!                    ")
+		fmt.Println("--------------------------------------------------")
 		fmt.Println("\nMenu Acara:")
 		fmt.Println("1. Buat Acara Baru")
 		fmt.Println("2. Edit Detail Acara")
 		fmt.Println("3. Cari Acara")
 		fmt.Println("4. Urutkan Acara")
 		fmt.Println("5. Kembali ke Dashboard")
+		fmt.Println("--------------------------------------------------")
 		fmt.Print("Menu yang dipilih (1/2/3/4/5): ")
 
 		var pilih int
@@ -265,9 +274,9 @@ func menuEvents(user User) {
 
 func createEvent(user User) {
 	if eventCount >= maxEvents {
-		fmt.Println("===================")
-		fmt.Println("Event limit reached")
-		fmt.Println("===================")
+		fmt.Println("--------------------------------------------------")
+		fmt.Println("              Event limit reached!               ")
+		fmt.Println("--------------------------------------------------")
 		return
 	}
 
@@ -295,7 +304,9 @@ func createEvent(user User) {
 	events[eventCount] = newEvent
 	eventCount++
 
-	fmt.Println("Acara berhasil dibuat!")
+	fmt.Println("--------------------------------------------------")
+	fmt.Println("              Acara berhasil dibuat!              ")
+	fmt.Println("--------------------------------------------------")
 }
 
 func editEvent(user User) {
@@ -467,10 +478,14 @@ func hapusPeserta() {
 }
 
 func cariPeserta() {
+	fmt.Println("==================================================")
+	fmt.Println("                   Pilih Menu!                    ")
+	fmt.Println("--------------------------------------------------")
 	fmt.Println("Cari Peserta")
 	fmt.Println("1. Cari berdasarkan Nama")
 	fmt.Println("2. Cari berdasarkan Email")
 	fmt.Println("3. Kembali ke Menu Peserta")
+	fmt.Println("--------------------------------------------------")
 	fmt.Print("Pilih opsi (1/2/3): ")
 
 	var pilih int
@@ -612,9 +627,13 @@ func searchEventByDate(date string) {
 }
 
 func sortEvent() {
+	fmt.Println("==================================================")
+	fmt.Println("                   Pilih Menu!                    ")
+	fmt.Println("--------------------------------------------------")
 	fmt.Println("\nUrutkan Acara")
 	fmt.Println("1. Urutkan berdasarkan Tanggal (Ascending)")
 	fmt.Println("2. Urutkan berdasarkan Tanggal (Descending)")
+	fmt.Println("--------------------------------------------------")
 	fmt.Print("Opsi yang dipilih (1/2):")
 
 	var pilih int
@@ -648,13 +667,16 @@ func sortEventsByDate(ascending bool) {
 }
 
 func editProfile(user *User) {
-	fmt.Println("Profil Anda:")
+	fmt.Println("==================================================")
+	fmt.Println("                   Profil Anda                    ")
+	fmt.Println("--------------------------------------------------")
 	fmt.Printf("1. Username: %s\n", user.Username)
 	fmt.Printf("2. Password: %s\n", user.Password)
 	fmt.Printf("3. Nama Lengkap: %s\n", user.FullName)
 	fmt.Printf("4. Email: %s\n", user.Email)
 	fmt.Printf("5. Nomor Telepon: %s\n", user.Phone)
 	fmt.Println("6. Kembali ke Dashboard")
+	fmt.Println("--------------------------------------------------")
 	fmt.Print("Jika ingin mengedit profil silahkan pilih (1/2/3/4/5), jika tidak pilih (6) untuk kembali ke dashboard: ")
 
 	var pilih int
